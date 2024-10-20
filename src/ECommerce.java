@@ -35,10 +35,11 @@ public class ECommerce {
             System.out.println("1. Registrarse");
             System.out.println("2. Iniciar sesion");
             System.out.println("3. Ver productos disponibles");
-            System.out.println("4. Agregar productos al carrito");
-            System.out.println("5. Ver carrito");
-            System.out.println("6. Procesar pago");
-            System.out.println("7. Salir");
+            System.out.println("4. Ver productos con descuento");
+            System.out.println("5. Agregar productos al carrito");
+            System.out.println("6. Ver carrito");
+            System.out.println("7. Procesar pago");
+            System.out.println("8. Salir");
             System.out.print("Seleccione una opcion: ");
             int opcion = scanner.nextInt();
             scanner.nextLine(); // Consumir el salto de línea
@@ -75,11 +76,20 @@ public class ECommerce {
                     // Ver productos disponibles
                     System.out.println("=== Productos disponibles ===");
                     for (Producto p : listaProductosDisponibles) {
-                        p.verDetalles();
+                        p.verDetalles();  // Mostrar detalles del producto, incluyendo precio con IVA
                     }
                     break;
 
                 case 4:
+                    // Ver productos con descuento
+                    System.out.println("=== Productos con descuento ===");
+                    for (Producto p : listaProductosDisponibles) {
+                        double precioConDescuento = p.calcularDescuento();
+                        System.out.println(p.getNombre() + " - Precio con descuento: $" + precioConDescuento);
+                    }
+                    break;
+
+                case 5:
                     // Agregar productos al carrito
                     if (carrito != null) {
                         System.out.print("Ingrese el ID del producto que desea agregar: ");
@@ -102,19 +112,19 @@ public class ECommerce {
                     }
                     break;
 
-                case 5:
+                case 6:
                     // Ver productos en el carrito
                     if (carrito != null) {
                         System.out.println("=== Productos en el Carrito ===");
                         for (Producto p : carrito.getProductos()) {
-                            p.verDetalles();
+                            p.verDetalles();  // Mostrar detalles, incluyendo precio con IVA
                         }
                     } else {
                         System.out.println("Debe iniciar sesion primero.");
                     }
                     break;
 
-                case 6:
+                case 7:
                     // Procesar el pago
                     if (carrito != null && !carrito.getProductos().isEmpty()) {
                         System.out.println("Procesando pago...");
@@ -136,17 +146,17 @@ public class ECommerce {
                         // Limpiar el carrito después del pago
                         carrito = new Carrito();
                     } else {
-                        System.out.println("El carrito esta vacio. No se puede procesar el pago.");
+                        System.out.println("El carrito está vacio. No se puede procesar el pago.");
                     }
                     break;
 
-                case 7:
+                case 8:
                     // Salir
                     System.out.println("Gracias por usar Deport Line.");
                     return;
 
                 default:
-                    System.out.println("Opcion no valida. Intente de nuevo.");
+                    System.out.println("Opcion no válida. Intente de nuevo.");
             }
         }
     }

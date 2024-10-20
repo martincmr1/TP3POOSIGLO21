@@ -4,54 +4,26 @@ TP3 : POO
  */
 package Clases;
 
-public class Producto {
+public class Producto extends ProductoBase {
 
-    private int id;
-    private String nombre;
-    private String marca;
-    private String modelo;
-    private int stock;
-    private double precio;
-
-    public Producto(int id, String nombre, String marca, String modelo, int stock, double precio) {
-        this.id = id;
-        this.nombre = nombre;
-        this.marca = marca;
-        this.modelo = modelo;
-        this.stock = stock;
-        this.precio = precio;
+    // Constructor de Producto
+    public Producto(int id, String nombre, String marca, String categoria, int stock, double precio) {
+        super(id, nombre, marca, categoria, stock, precio);
     }
 
+    public double calcularDescuento() {
+        // Aplicar un 10% de descuento
+        return this.getPrecio() * 0.9;
+    }
+
+    // Mostrar los detalles del producto, incluyendo el precio con IVA
     public void verDetalles() {
-        System.out.println("ID: " + id + ", Producto: " + nombre + ", Marca: " + marca + ", Modelo: " + modelo + ", Stock: " + stock + ", Precio: " + precio);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getMarca() {
-        return marca;
-    }
-
-    public String getModelo() {
-        return modelo;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public double getPrecio() {
-        return precio;
-    }
-
-    public void actualizarStock(int cantidad) {
-        this.stock += cantidad;
-        System.out.println("Stock actualizado. Nuevo stock: " + this.stock);
+        System.out.println("ID: " + this.getId());
+        System.out.println("Nombre: " + this.getNombre());
+        System.out.println("Marca: " + this.getMarca());
+        System.out.println("Categoria: " + this.getCategoria());
+        System.out.println("Stock: " + this.getStock());
+        System.out.println("Precio sin IVA: $" + this.getPrecio());
+        System.out.println("Precio con IVA: $" + this.getPrecioConIVA());
     }
 }

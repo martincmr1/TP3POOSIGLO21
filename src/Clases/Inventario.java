@@ -16,7 +16,7 @@ public class Inventario {
 
     public void actualizarInventario(Producto producto) {
         listaProductos.add(producto);
-        System.out.println("Producto añadido al inventario: " + producto.getNombre());
+        System.out.println("Producto anadido al inventario: " + producto.getNombre());
     }
 
     public void mostrarInventario() {
