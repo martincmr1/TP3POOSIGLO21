@@ -3,6 +3,8 @@ DNI: 28337376
 TP4 : POO 
  */
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import Clases.*;
@@ -15,24 +17,26 @@ public class ECommerce {
         Scanner scanner = new Scanner(System.in);
         Usuario usuario = null;
         Carrito carrito = null;
+        /* Gestor de productos para facilitar la actualizacíon a futuro en el caso que
+haya modificiones o cambios de precio sin necesidad de modificar la clase principal.*/
+        GestorProductos gestorProductos = new GestorProductos();
 
-         GestorProductos gestorProductos = new GestorProductos();
-
-        // Menú interactivo
+        /* Menú interactivo con un bloque try-catch para capturar la excepción por ingreso de 
+        caracteres no deseados. */
         while (true) {
             try {
                 System.out.println("-----------------------");
                 System.out.println("----- Deport Line -----");
                 System.out.println("-----------------------");
                 System.out.println("1. Registrarse");
-                System.out.println("2. Iniciar sesión");
+                System.out.println("2. Iniciar sesion");
                 System.out.println("3. Ver productos disponibles");
                 System.out.println("4. Ver productos con descuento");
                 System.out.println("5. Agregar productos al carrito");
                 System.out.println("6. Ver carrito");
                 System.out.println("7. Procesar pago");
                 System.out.println("8. Salir");
-                System.out.print("Seleccione una opción: ");
+                System.out.print("Seleccione una opcion: ");
                 int opcion;
 
                 try {
@@ -40,11 +44,12 @@ public class ECommerce {
                     scanner.nextLine(); // Consumir el salto de línea
 
                     if (opcion < 1 || opcion > 8) {
-                        throw new CaracteresInvalidosException("Opción inválida. Por favor, seleccione una opción entre 1 y 8.");
+                        throw new CaracteresInvalidosException("Opcion invalida. Por favor, seleccione una opcion entre 1 y 8.");
                     }
+                    //Captura excepciones
                 } catch (InputMismatchException e) {
                     scanner.nextLine(); // Limpiar el buffer
-                    throw new CaracteresInvalidosException("Entrada inválida. Por favor, ingrese un número válido.");
+                    throw new CaracteresInvalidosException("Entrada invalida. Por favor, ingrese un numero valido.");
                 }
 
                 switch (opcion) {
@@ -54,10 +59,14 @@ public class ECommerce {
                         String nombre = scanner.nextLine();
                         System.out.print("Ingrese su email: ");
                         String email = scanner.nextLine();
-                        System.out.print("Ingrese su contraseña: ");
+                        System.out.print("Ingrese su contrasena: ");
                         String contrasena = scanner.nextLine();
+
                         usuario = new Usuario(1, nombre, email, contrasena);
                         usuario.registrar();
+
+                        // Guardar usuario en el archivo usuarios.txt
+                        guardarUsuarioEnArchivo(usuario);
                     }
 
                     case 2 -> {
@@ -65,7 +74,7 @@ public class ECommerce {
                         if (usuario != null) {
                             System.out.print("Ingrese su email: ");
                             String emailSesion = scanner.nextLine();
-                            System.out.print("Ingrese su contraseña: ");
+                            System.out.print("Ingrese su contrasena: ");
                             String contrasenaSesion = scanner.nextLine();
                             if (usuario.iniciarSesion(emailSesion, contrasenaSesion)) {
                                 carrito = new Carrito();
@@ -76,27 +85,25 @@ public class ECommerce {
                     }
 
                     case 3 -> {
-                        // Ver productos disponibles
-                       System.out.println("=== Productos disponibles ===");
+                        // Ver productos disponibles llamando al gestor de productos
+                        System.out.println("=== Productos disponibles ===");
                         for (Producto p : gestorProductos.getListaProductos()) {
-                            p.verDetalles(); // Mostrar detalles del producto
+                            p.verDetalles();
                         }
-                        break;
                     }
 
                     case 4 -> {
-                        // Ver productos con descuento
-                       System.out.println("=== Productos con descuento ===");
+                        // Ver productos con descuento llamando al gestor de productos
+                        System.out.println("=== Productos con descuento ===");
                         for (Producto p : gestorProductos.getListaProductos()) {
                             double precioConDescuento = p.calcularDescuento();
                             System.out.println(p.getNombre() + " - Precio con descuento: $" + precioConDescuento);
                         }
-                        break;
                     }
 
                     case 5 -> {
                         // Agregar productos al carrito
-                         if (carrito != null) {
+                        if (carrito != null) {
                             System.out.print("Ingrese el ID del producto que desea agregar: ");
                             int idProducto = scanner.nextInt();
                             Producto productoSeleccionado = gestorProductos.buscarProductoPorId(idProducto);
@@ -107,9 +114,8 @@ public class ECommerce {
                                 System.out.println("Producto no encontrado.");
                             }
                         } else {
-                            System.out.println("Debe iniciar sesión primero.");
+                            System.out.println("Debe iniciar sesion primero.");
                         }
-                        break;
                     }
 
                     case 6 -> {
@@ -120,20 +126,20 @@ public class ECommerce {
                                 p.verDetalles();
                             }
                         } else {
-                            System.out.println("Debe iniciar sesión primero.");
+                            System.out.println("Debe iniciar sesion primero.");
                         }
                     }
 
                     case 7 -> {
                         // Procesar el pago
                         if (carrito != null && !carrito.getProductos().isEmpty()) {
-                            System.out.println("Seleccione el método de pago:");
+                            System.out.println("Seleccione el metodo de pago:");
                             System.out.println("1. Tarjeta");
                             System.out.println("2. Efectivo");
 
                             try {
                                 int metodoPago = scanner.nextInt();
-                                scanner.nextLine(); // Consumir el salto de línea
+                                scanner.nextLine();
 
                                 Pago pago;
 
@@ -142,7 +148,7 @@ public class ECommerce {
                                 } else if (metodoPago == 2) {
                                     pago = new PagoEnEfectivo();
                                 } else {
-                                    System.out.println("Método de pago no válido.");
+                                    System.out.println("Metodo de pago no valido.");
                                     break;
                                 }
 
@@ -160,18 +166,19 @@ public class ECommerce {
                                     }
 
                                     System.out.println("Total gastado: $" + totalGastado);
-                                    System.out.println("Pago procesado con éxito.");
+                                    System.out.println("Pago procesado con exito.");
 
-                                    carrito = new Carrito(); // Vaciar el carrito
+                                    carrito = new Carrito();
                                 } else {
                                     System.out.println("El pago no pudo ser validado.");
                                 }
+                                //Captura de excepciones
                             } catch (InputMismatchException e) {
-                                scanner.nextLine(); // Limpiar el buffer
-                                System.out.println("Entrada inválida. Seleccione una opción numérica válida.");
+                                scanner.nextLine();
+                                System.out.println("Entrada invalida. Seleccione una opcion numerica valida.");
                             }
                         } else {
-                            System.out.println("Debe iniciar sesión y tener productos en el carrito para procesar el pago.");
+                            System.out.println("Debe iniciar sesion y tener productos en el carrito para procesar el pago.");
                         }
                     }
 
@@ -181,11 +188,30 @@ public class ECommerce {
                         return;
                     }
 
-                    default -> System.out.println("Opción no válida.");
+                    default ->
+                        System.out.println("Opcion no valida.");
                 }
+                //Captura de excepciones
             } catch (CaracteresInvalidosException e) {
                 System.out.println(e.getMessage());
             }
+        }
+    }
+
+    /* Método para guardar usuarios en un archivo de forma ordena separados por salto 
+    de lineas y delimitados por linea de guiones*/
+    private static void guardarUsuarioEnArchivo(Usuario usuario) {
+        String rutaArchivo = "usuarios.txt";
+        try (FileOutputStream fos = new FileOutputStream(rutaArchivo, true)) {
+            String datosUsuario = "Nombre: " + usuario.getNombre() + "\n"
+                    + "Email: " + usuario.getEmail() + "\n"
+                    + "Contraseña: " + usuario.getContrasena() + "\n"
+                    + "-------------------------\n";
+            fos.write(datosUsuario.getBytes());
+            System.out.println("Usuario guardado en el archivo.");
+            //Captura de excepciones por posibles errores al escribir el archivo.
+        } catch (IOException e) {
+            System.out.println("Error al guardar el usuario en el archivo: " + e.getMessage());
         }
     }
 }
